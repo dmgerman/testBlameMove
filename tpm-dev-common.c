@@ -28,14 +28,15 @@ file|"tpm-dev.h"
 end_include
 
 begin_function
-DECL|function|user_reader_timeout (unsigned long ptr)
+DECL|function|user_reader_timeout (struct timer_list * t)
 specifier|static
 name|void
 name|user_reader_timeout
 parameter_list|(
-name|unsigned
-name|long
-name|ptr
+name|struct
+name|timer_list
+modifier|*
+name|t
 parameter_list|)
 block|{
 name|struct
@@ -43,12 +44,14 @@ name|file_priv
 modifier|*
 name|priv
 init|=
-operator|(
-expr|struct
-name|file_priv
-operator|*
-operator|)
-name|ptr
+name|from_timer
+argument_list|(
+name|priv
+argument_list|,
+name|t
+argument_list|,
+name|user_read_timer
+argument_list|)
 decl_stmt|;
 name|pr_warn
 argument_list|(
@@ -188,7 +191,7 @@ operator|->
 name|buffer_mutex
 argument_list|)
 expr_stmt|;
-name|setup_timer
+name|timer_setup
 argument_list|(
 operator|&
 name|priv
@@ -197,11 +200,7 @@ name|user_read_timer
 argument_list|,
 name|user_reader_timeout
 argument_list|,
-operator|(
-name|unsigned
-name|long
-operator|)
-name|priv
+literal|0
 argument_list|)
 expr_stmt|;
 name|INIT_WORK
